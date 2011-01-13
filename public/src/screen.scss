@@ -1,0 +1,71 @@
+// This import applies a global reset to any page that imports this stylesheet.
+@import "blueprint/reset";
+
+// To configure blueprint, edit the partials/base.sass file.
+@import "partials/base";
+
+// Import all the default blueprint modules so that we can access their mixins.
+@import "blueprint";
+@import "blueprint/buttons";
+
+// Combine the partials into a single screen stylesheet.
+@import "partials/page";
+@import "partials/form";
+@import "partials/two_col";
+
+@import "compass/css3";
+
+$content-background: #FFF;
+$default-background: #C2DFFF;
+$default-border: #6698FF;
+$hover-border: #1589FF;
+$active-border: #8AFB17;
+
+@mixin ui-state-default {
+  background-color: $default-background;
+  border: 1px solid $default-border;
+  @include border-radius(4px, 4px);
+}
+
+@mixin ui-state-active {
+  border: 1px solid $active-border;
+}
+
+body {
+  background-color: $default-background;
+  padding-top: 20px;
+}
+
+button {
+  @include button-colors( #000, $default-background, $default-border );
+  @include button-hover-colors( #000, $default-background, $hover-border );
+  @include border-radius(4px, 4px);
+  border-width: 1px;
+  
+  &.hover{
+    @extend button:hover;
+  }
+}
+
+#dropzone {
+  height: 100px;
+  @include ui-state-default;
+  &.active {
+    @include ui-state-active
+  }
+}
+
+#container {
+  background-color: $content-background;
+  border: 1px solid $default-border;
+  @include border-radius(4px, 4px);
+  padding: 20px 40px;
+  #header,
+  #footer {
+    text-align: center;
+  }
+  #content {
+    min-height: 600px;
+    font-size: 20px;
+  }
+}

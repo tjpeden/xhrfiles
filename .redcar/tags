@@ -1,0 +1,4 @@
+1294949360
+Home	/workspace/javascript/jquery-xhrfiles/xhrfiles.rb	class Home 
+ROOT	/workspace/javascript/jquery-xhrfiles/xhrfiles.rb	ROOT =
+r	/workspace/javascript/jquery-xhrfiles/public/javascripts/jquery.xhrfiles.js	function r(name, replacement) { message = message.replace(name, replacement)

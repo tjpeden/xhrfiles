@@ -1,0 +1,21 @@
+!!!
+%html
+  %head
+    %title xhrfiles
+    %link{:href => '/stylesheets/screen.css', :media => 'screen, projection', :rel => 'stylesheet', :type => 'text/css'}/
+    %link{:href => '/stylesheets/print.css', :media => 'print', :rel => 'stylesheet', :type => 'text/css'}/
+    /[if lt IE 8]
+      %link{:href => 'stylesheets/ie.css', :media => 'screen, projection', :rel => 'stylesheet', :type => 'text/css'}/
+    %script{:type => 'text/javascript', :src => '//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js'}
+    %script{:type => 'text/javascript', :src => 'javascripts/jquery.xhrfiles.js'}
+    %script{:type => 'text/javascript', :src => 'javascripts/application.js'}
+  %body.bp.two-col
+    #container
+      #header
+        %h1 xhrfiles Test App!
+      #sidebar
+        %a{:href => 'http://github.com/tpeden'} TJ's Github
+      #content
+        = yield
+      #footer
+        %p &copy; 2011 TJ Peden - All rights reserved.
