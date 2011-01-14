@@ -4,20 +4,36 @@
     return function() { return id++; };
   } )();
   
-  var Builder = function(self, options) {
+  var Builder = function(obj, options) {
     this.settings = {
+      action: '/upload',
+      params: {},
+      allowedExtensions: [],
+      sizeLimit: 0,
+      
       buttonText: 'Upload',
       inputName: 'thefile',
       
       classes: {
         hover: 'ui-state-hover',
         active: 'ui-state-active'
+      },
+      
+      messages: {
+        typeError: "{file}: invalid extension. Allowed: {extensions}.",
+        sizeError: "{file}: too largs. Maximum: {sizeLimit}.",
+        emptyError: "{file}: empty, please select files again without it.",
+        onLeave: "Files are still being uploaded, leaving now will cancel them."
+      },
+      
+      showMessage: function(message) {
+        alert( message );
       }
     };
     
     $.extend( this.settings, options );
     
-    this.element = self;
+    this.element = obj;
     
     this.button = this.createButton();
     this.form = this.createForm();
@@ -97,7 +113,7 @@
         enctype: 'multipart/form-data'
       } );
       
-      this.element.trigger( 'form.created', [form] );
+      this.element.trigger( 'form.created.xhrfiles', [form] );
       
       this.element.append( form );
       
@@ -113,32 +129,17 @@
     }
   };
   
-  var XhrUploader = function(self, options) {
+  var XhrUploader = function(obj, options) {
     Builder.apply( this, arguments );
     
-    this.settings = {
-      action: '/upload',
-      params: {},
-      allowedExtensions: [],
-      sizeLimit: 0,
+    var defaults = {
       maxConnections: 3,
-      dropzone: null,
-      
-      messages: {
-        typeError: "{file}: invalid extension. Allowed: {extensions}.",
-        sizeError: "{file}: too largs. Maximum: {sizeLimit}.",
-        emptyError: "{file}: empty, please select files again without it.",
-        onLeave: "Files are still being uploaded, leaving now will cancel them."
-      },
-      
-      showMessage: function(message) {
-        alert( message );
-      }
+      dropzone: null
     }
     
-    $.extend( this.settings, options );
+    $.extend( this.settings, defaults, options );
     
-    this.input.attr('multiple', 'multiple');
+    this.input.attr('multiple', true);
     
     this.files = [];
     this.xhrs = [];
@@ -238,7 +239,7 @@
       var xhr = new XMLHttpRequest();
       var id = this.xhrs.push(xhr) - 1;
       
-      this.element.trigger( 'file.start', [name, id] );
+      this.element.trigger( 'start.xhrfiles', [id, name] );
       
       var baseData = {};
       baseData[this.input.attr('name')] = name;
@@ -249,14 +250,14 @@
       xhr.upload.onprogress = function(e) {
         if( e.lengthComputable ) {
           var params = [id, name, e.loaded, e.total];
-          self.element.trigger( 'file.progress', params );
+          self.element.trigger( 'progress.xhrfiles', params );
         }
       }
       
       xhr.onreadystatechange = function() {
         if( xhr.readyState == 4 ) {
           
-          self.element.trigger( 'file.progress', [id, name, size, size] );
+          self.element.trigger( 'progress.xhrfiles', [id, name, size, size] );
           
           if( xhr.status == 200 ) {
             var response;
@@ -267,9 +268,9 @@
               response = {};
             }
             
-            self.element.trigger( 'file.success', [id, name, response, xhr.responseText] );
+            self.element.trigger( 'success.xhrfiles', [id, name, response, xhr.responseText] );
           } else {
-            self.element.trigger( 'file.error', [id, name] );
+            self.element.trigger( 'error.xhrfiles', [id, name] );
           }
           
           self.xhrs[id] = null;
@@ -313,7 +314,7 @@
     next: function() {
       if( this.files.length == 0 ) {
         this.uploading = false;
-        this.element.trigger( 'uploader.complete' );
+        this.element.trigger( 'complete.xhrfiles' );
       } else {
         this.upload( this.files.shift() );
       }
@@ -359,7 +360,7 @@
     }
   } );
   
-  var FormUploader = function(self, options) {
+  var FormUploader = function(obj, options) {
     Builder.apply( this, arguments );
     
     this.files = [];
@@ -412,10 +413,10 @@
           this.contentDocument.body &&
           this.contentDocument.body.innerHTML == "false" ) { return; }
         
-        var response = self.iframeContentJSON( iframe );
+        var response = self.iframeContentJSON( iframe[0] );
         
-        self.element.trigger( 'file.success', [id, name, response] );
-        self.element.trigger( 'uploader.complete' );
+        self.element.trigger( 'success.xhrfiles', [id, name, response] );
+        self.element.trigger( 'complete.xhrfiles' );
         
         delete self.files[id];
         
@@ -424,6 +425,8 @@
           iframe.remove();
         }, 1 );
       } );
+      
+      this.element.trigger( 'start.xhrfiles', [id, name] );
       
       this.form.submit();
     },
@@ -455,18 +458,17 @@
     }
   } );
   
-  var DropZone = function(self, options) {
+  var DropZone = function(obj, options) {
     this.settings = {
       enter: function(e) {},
       leave: function(e) {},
       leaveNonDescendants: function(e) {},
-      drop: function(e) {},
-      debug: true
+      drop: function(e) {}
     };
     
     $.extend( this.settings, options );
     
-    this.element = self;
+    this.element = obj;
     
     this.disableDropOutside();
     this.attachEvents();
@@ -541,13 +543,56 @@
     }
   };
   
-  $.fn.xhrfiles = function(options) {
-    return this.each( function() {
-      if( XhrUploader.isSupported() ) {
-        new XhrUploader($(this), options);
-      } else {
-        new FormUploader($(this), options);
-      }
-    } );
+  var methods = {
+    init: function(options) {
+      return this.each( function() {
+        var self = $(this);
+        var data = self.data('xhrfiles');
+        var uploader;
+        
+        if( !data ) {
+          options = options || {};
+          if( XhrUploader.isSupported() && ( !('iframeOnly' in options) || !options.iframeOnly ) ) {
+            console.log( 'Using XhrUploader' );
+            uploader = new XhrUploader(self, options);
+          } else {
+            console.log( 'Using FormUploader' );
+            uploader = new FormUploader(self, options);
+          }
+          
+          self.data( 'xhrfiles', {
+            target: self,
+            uploader: uploader
+          } );
+        }
+      } );
+    },
+    
+    destroy: function() {
+      return this.each( function() {
+        var self = $(this);
+        var data = self.data('xhrfiles');
+        
+        self.unbind('.xhrfiles');
+        self.empty();
+        
+        delete data.uploader;
+        self.removeData('xhrfiles');
+      } );
+    },
+    
+    xhrSupported: function() {
+      return XhrUploader.isSupported();
+    }
+  };
+  
+  $.fn.xhrfiles = function(method) {
+    if( method in methods ) {
+      return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ) );
+    } else if( typeof method === 'object' || !method ) {
+      return methods.init.apply( this, arguments );
+    } else {
+      $.error( 'Method ' +  method + ' does not exist on jQuery.xhrfiles' );
+    }    
   }
 } )( jQuery );

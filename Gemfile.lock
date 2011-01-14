@@ -1,0 +1,32 @@
+GIT
+  remote: http://github.com/tpeden/sinatra-static-assets.git
+  revision: e32e5a15397206f78b9a5fa73169fafcc7029e23
+  specs:
+    sinatra-static-assets (0.5.1)
+      rack (>= 1.0.0)
+      sinatra (>= 0.9.1)
+
+GEM
+  specs:
+    compass (0.10.6)
+      haml (>= 3.0.4)
+    haml (3.0.25)
+    json (1.4.6)
+    rack (1.2.1)
+    sinatra (1.1.2)
+      rack (~> 1.1)
+      tilt (~> 1.2)
+    sinatra-content-for2 (0.2.3)
+      sinatra
+    tilt (1.2.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  compass
+  haml
+  json
+  sinatra
+  sinatra-content-for2
+  sinatra-static-assets!

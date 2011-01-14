@@ -1,3 +1,9 @@
-require ::File.join( ::File.dirname(__FILE__), 'xhrfiles.rb' )
+ROOT = ::File.dirname(__FILE__)
 
-run Home
+require 'rubygems'
+require 'bundler'
+
+Bundler.require
+
+require ::File.join( ROOT, 'xhrfiles.rb' )
+run Test

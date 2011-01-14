@@ -2,20 +2,43 @@
 %html
   %head
     %title xhrfiles
-    %link{:href => '/stylesheets/screen.css', :media => 'screen, projection', :rel => 'stylesheet', :type => 'text/css'}/
-    %link{:href => '/stylesheets/print.css', :media => 'print', :rel => 'stylesheet', :type => 'text/css'}/
+    = stylesheet_link_tag :screen, :qunit
+    = stylesheet_link_tag :print, :media => 'print'
     /[if lt IE 8]
-      %link{:href => 'stylesheets/ie.css', :media => 'screen, projection', :rel => 'stylesheet', :type => 'text/css'}/
-    %script{:type => 'text/javascript', :src => '//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js'}
-    %script{:type => 'text/javascript', :src => 'javascripts/jquery.xhrfiles.js'}
-    %script{:type => 'text/javascript', :src => 'javascripts/application.js'}
+      = stylesheet_link_tag :ie
+    = javascript_include_tag '//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', 'qunit', 'jquery.xhrfiles'
+    = yield_content :head
   %body.bp.two-col
     #container
       #header
-        %h1 xhrfiles Test App!
+        %h1 xhrfiles jQuery Plugin
       #sidebar
-        %a{:href => 'http://github.com/tpeden'} TJ's Github
+        %ul
+          %li
+            %a{:href => 'http://github.com/tpeden'} TJ Peden's Github
+            %ul
+              %li
+                %a{:href => 'http://github.com/tpeden/xhrfiles'} xhrfiles
+          %li
+            %a{:href => 'http://github.com/valums'} Andrew Valums' Github
+            %ul
+              %li
+                %a{:href => 'http://github.com/valums/file-uploader'} file-uploader
+          %li
+            %a{:href => 'http://jquery.org'} jQuery
+            %ul
+              %li
+                %a{:href => 'http://jquery.org/about'} About
+              %li
+                %a{:href => 'http://jquery.com'} Core
+              %li
+                %a{:href => 'http://docs.jquery.com/Qunit'} QUnit
+          %li
+            %a{:href => 'http://compass-style.org'} Compass
       #content
         = yield
       #footer
-        %p &copy; 2011 TJ Peden - All rights reserved.
+        %p
+          &copy; 2011 TJ Peden
+          %br/
+          xhrfiles is licensed under GNU GPL v2 or later.

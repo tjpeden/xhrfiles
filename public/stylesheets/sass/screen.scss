@@ -7,6 +7,7 @@
 // Import all the default blueprint modules so that we can access their mixins.
 @import "blueprint";
 @import "blueprint/buttons";
+@import "blueprint/fancy_type";
 
 // Combine the partials into a single screen stylesheet.
 @import "partials/page";
@@ -14,17 +15,18 @@
 @import "partials/two_col";
 
 @import "compass/css3";
+@import "compass/utilities";
 
 $content-background: #FFF;
 $default-background: #C2DFFF;
 $default-border: #6698FF;
 $hover-border: #1589FF;
-$active-border: #8AFB17;
+$active-border: #348781;
 
 @mixin ui-state-default {
   background-color: $default-background;
   border: 1px solid $default-border;
-  @include border-radius(4px, 4px);
+  @include border-radius(15px, 15px);
 }
 
 @mixin ui-state-active {
@@ -32,6 +34,7 @@ $active-border: #8AFB17;
 }
 
 body {
+  @include fancy-type;
   background-color: $default-background;
   padding-top: 20px;
 }
@@ -39,7 +42,7 @@ body {
 button {
   @include button-colors( #000, $default-background, $default-border );
   @include button-hover-colors( #000, $default-background, $hover-border );
-  @include border-radius(4px, 4px);
+  @include border-radius(15px, 15px);
   border-width: 1px;
   
   &.hover{
@@ -48,6 +51,7 @@ button {
 }
 
 #dropzone {
+  display: none;
   height: 100px;
   @include ui-state-default;
   &.active {
@@ -57,15 +61,34 @@ button {
 
 #container {
   background-color: $content-background;
-  border: 1px solid $default-border;
-  @include border-radius(4px, 4px);
+  //border: 1px solid $default-border;
+  @include border-radius(15px, 15px);
   padding: 20px 40px;
   #header,
   #footer {
     text-align: center;
   }
+  #sidebar {
+    a {
+      @include link-colors( $default-border, $hover-border, $active-border );
+    }
+    font-size: 16px;
+    & > ul {
+      padding-left: 0;
+    }
+    ul ul {
+      padding-left: 25px;
+    }
+    li {
+      list-style: none;
+    }
+  }
   #content {
     min-height: 600px;
     font-size: 20px;
   }
+}
+
+#qunit-fixture {
+  height: 250px;
 }

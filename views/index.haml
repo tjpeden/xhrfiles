@@ -1,3 +1,11 @@
-#uploader
-#dropzone
-%pre#output
+- content_for :head do
+  = javascript_include_tag :application
+
+%h1#qunit-header xhrfiles tests
+#qunit-banner
+#qunit-testrunner-toolbar
+%h2#qunit-userAgent
+%ol#qunit-tests
+#qunit-fixture
+  #uploader
+  #dropzone

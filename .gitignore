@@ -1,3 +1,3 @@
-.redcar
+.redcar/**/*
 .sass-cache
-uploads/*
+public/uploads/*
