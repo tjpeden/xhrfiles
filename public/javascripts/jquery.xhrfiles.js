@@ -241,8 +241,7 @@
       
       this.element.trigger( 'start.xhrfiles', [id, name] );
       
-      var baseData = {};
-      baseData[this.input.attr('name')] = name;
+      var baseData = { filename: name};
       var data = $.extend( this.settings.params, baseData );
       var url = this.settings.action + '?' + $.param( data );
             
@@ -397,8 +396,7 @@
       
       var iframe = this.createIframe( id );
       
-      var baseData = {};
-      baseData[this.input.attr('name')] = name;
+      var baseData = { filename: name };
       var data = $.extend( this.settings.params, baseData );
       var url = this.settings.action + '?' + $.param( data );
       

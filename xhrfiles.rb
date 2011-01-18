@@ -17,7 +17,7 @@ class Test < Sinatra::Base
     begin
       request.body.rewind
       puts "params: #{params.inspect}"
-      ::File.open( ::File.join( ROOT, 'public', 'uploads', params[:thefile] ), 'wb' ) { |f| f.write request.body.read }
+      ::File.open( ::File.join( ROOT, 'public', 'uploads', params[:filename] ), 'wb' ) { |f| f.write request.body.read }
       {'success' => true}.to_json
     rescue Exception => e
       {'success' => false, 'error' => e.message}.to_json
